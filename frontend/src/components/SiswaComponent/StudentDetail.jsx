@@ -1,5 +1,5 @@
 import React from "react";
-import Modal from "react-bootstrap/Modal";
+import MyModal from "../MyModal";
 import Button from "react-bootstrap/Button";
 import { QRCodeCanvas } from "qrcode.react";
 import { toPng } from "html-to-image";
@@ -22,40 +22,30 @@ const StudentDetail = ({ student, onHide }) => {
 	};
 
 	return (
-		<Modal
-			show={true}
-			onHide={onHide}
-			size="sm"
-			centered
-			className="student-modal">
-			<Modal.Header closeButton>
-				<Modal.Title>Detail Siswa</Modal.Title>
-			</Modal.Header>
-			<Modal.Body className="d-flex flex-column align-items-center student-card">
-				<div id="qr-code" className="qr-code-container">
-					<QRCodeCanvas value={student.nsin} size={128} />
-				</div>
-				<div className="student-info">
-					<p>
-						<strong>NSIN:</strong> {student.nsin}
-					</p>
-					<p>
-						<strong>Nama Lengkap:</strong> {student.full_name}
-					</p>
-					<p>
-						<strong>Kelas:</strong> {student.class}
-					</p>
-					<p>
-						<strong>Nomer Wali:</strong> {student.parent_number}
-					</p>
-				</div>
-				<div style={{ textAlign: "center", marginTop: "10px" }}>
-					<Button variant="success" onClick={downloadQRCode}>
-						Download QR Code
-					</Button>
-				</div>
-			</Modal.Body>
-		</Modal>
+		<MyModal title="Detail Siswa" onHide={onHide}>
+			<div id="qr-code" className="qr-code-container">
+				<QRCodeCanvas value={student.nsin} size={128} />
+			</div>
+			<div className="student-info">
+				<p>
+					<strong>NSIN:</strong> {student.nsin}
+				</p>
+				<p>
+					<strong>Nama Lengkap:</strong> {student.full_name}
+				</p>
+				<p>
+					<strong>Kelas:</strong> {student.class}
+				</p>
+				<p>
+					<strong>Nomer Wali:</strong> {student.parent_number}
+				</p>
+			</div>
+			<div style={{ textAlign: "center", marginTop: "10px" }}>
+				<Button variant="success" onClick={downloadQRCode}>
+					Download QR Code
+				</Button>
+			</div>
+		</MyModal>
 	);
 };
 

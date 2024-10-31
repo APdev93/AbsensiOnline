@@ -12,7 +12,7 @@ const api = express.Router();
 api.get("/siswa", async (req, res, next) => {
 	const authHeader = req.headers["authorization"];
 	const token = authHeader && authHeader.split(" ")[1];
-	console.log(token);
+
 	if (!token) {
 		return response(
 			"Unauthorized: Tidak ada token yang diberikan",
@@ -37,51 +37,106 @@ api.get("/siswa", async (req, res, next) => {
 	});
 });
 api.post("/siswa/add", async (req, res, next) => {
-	const { full_name, class_name, parent_number } = req.body;
-	const query = `INSERT INTO students (student_code, full_name, class, parent_number, created_at) VALUES (?, ?, ?, ?, current_timestamp())`;
-	let studentCode = generateStudentCode();
-	db.query(
-		query,
-		[studentCode, full_name, class_name, parent_number],
-		(error, data) => {
-			if (error) {
-				console.error("[ API ] : ERROR => ", error);
-				return response("Internal Server Error!", null, 500, res);
-			} else {
-				response("Berhasil menambah siswa", { id: data.insertId }, 201, res);
-			}
-		},
-	);
+	const authHeader = req.headers["authorization"];
+	const token = authHeader && authHeader.split(" ")[1];
+
+	if (!token) {
+		return response(
+			"Unauthorized: Tidak ada token yang diberikan",
+			null,
+			403,
+			res,
+		);
+	}
+	jwt.verify(token, global.SECRET_KEY, err => {
+		if (err) {
+			return response("Forbidden: Token salah", null, 403, res);
+		}
+		const { nsin, full_name, class_name, parent_number } = req.body;
+		const query = `INSERT INTO students (nsin, full_name, class, parent_number, created_at) VALUES (?, ?, ?, ?, current_timestamp())`;
+
+		db.query(
+			query,
+			[nsin, full_name, class_name, parent_number],
+			(error, data) => {
+				if (error) {
+					console.error("[ API ] : ERROR => ", error);
+					return response("Internal Server Error!", null, 500, res);
+				} else {
+					response("Berhasil menambah siswa", { id: data.insertId }, 201, res);
+				}
+			},
+		);
+	});
 });
 
 api.post("/siswa/update", async (req, res, next) => {
-	const { sid, full_name, class_name, parent_number } = req.body;
-	const query = `UPDATE students SET full_name = ?, class = ?, parent_number = ? WHERE id = ?`;
-
-	db.query(query, [full_name, class_name, parent_number, sid], (error, data) => {
-		if (error) {
-			console.error("[ API ] : ERROR => ", error);
-			return response("Internal Server Error!", null, 500, res);
-		} else if (data.affectedRows === 0) {
-			return response("Siswa tidak ditemukan!", null, 404, res);
-		} else {
-			response("Berhasil mengedit siswa", { edited_id: sid }, 200, res);
+	const authHeader = req.headers["authorization"];
+	const token = authHeader && authHeader.split(" ")[1];
+	console.log(token);
+	if (!token) {
+		return response(
+			"Unauthorized: Tidak ada token yang diberikan",
+			null,
+			403,
+			res,
+		);
+	}
+	jwt.verify(token, global.SECRET_KEY, err => {
+		if (err) {
+			return response("Forbidden: Token salah", null, 403, res);
 		}
+		const { sid, nsin, full_name, class_name, parent_number } = req.body;
+		const query = `UPDATE students SET nsin = ?, full_name = ?, class = ?, parent_number = ? WHERE id = ?`;
+
+		db.query(
+			query,
+			[nsin, full_name, class_name, parent_number, sid],
+			(error, data) => {
+				if (error) {
+					console.error("[ API ] : ERROR => ", error);
+					return response("Internal Server Error!", null, 500, res);
+				} else if (data.affectedRows === 0) {
+					return response("Siswa tidak ditemukan!", null, 404, res);
+				} else {
+					response("Berhasil mengedit siswa", { edited_id: sid }, 200, res);
+				}
+			},
+		);
 	});
 });
 
-api.post("/siswa/delete", async (req, res, next) => {
+api.post("/siswa/delete", async (req, res, next) => {const authHeader = req.headers["authorization"];
+	const token = authHeader && authHeader.split(" ")[1];
+	console.log(token);
+	if (!token) {
+		return response(
+			"Unauthorized: Tidak ada token yang diberikan",
+			null,
+			403,
+			res,
+		);
+	}
+	jwt.verify(token, global.SECRET_KEY, err => {
+		if (err) {
+			return response("Forbidden: Token salah", null, 403, res);
+		}
 	const { sid } = req.body;
-	const query = `DELETE FROM students WHERE id = ?`;
+	const query = `DELETE FROM students WHERE sid = ?`;
 
 	db.query(query, [sid], (error, data) => {
-		if (error) {
-			console.error("[ API ] : ERROR => ", error);
-			return response("Internal Server Error!", null, 500, res);
-		} else {
-			response("Berhasil menghapus siswa!", { deleted_id: sid }, 200, res);
-		}
-	});
+	   	if (error) {
+	   		console.error("[ API ] : ERROR => ", error);
+	   		return response("Internal Server Error!", null, 500, res);
+	   	} else {
+	   		response(
+	   			"Berhasil menghapus siswa!",
+	   			{ deleted_student: { sid } },
+	   			200,
+	   			res,
+	   		);
+	   	}
+	});	});
 });
 
 module.exports = api;

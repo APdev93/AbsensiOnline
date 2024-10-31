@@ -45,6 +45,7 @@ const Siswa = () => {
 		<div className="mt-3 d-flex flex-column gap-3 p-2">
 			<div className="card shadow-sm p-1">
 				<div className="d-flex mb-1 flex-column gap-1">
+					<Button variant="success" onClick={() => setFilter("All")}>Tambah Siswa</Button>
 					<div className="d-flex flex-row gap-1">Filter</div>
 					<div className="d-flex flex-row flex-wrap gap-1">
 						<Button onClick={() => setFilter("X IPS")}>Kelas X IPS</Button>
@@ -52,7 +53,7 @@ const Siswa = () => {
 						<Button onClick={() => setFilter("XI IPA 1")}>Kelas XI IPA 1</Button>
 						<Button onClick={() => setFilter("XI IPA 2")}>Kelas XI IPA 2</Button>
 						<Button onClick={() => setFilter("XII")}>Kelas XII</Button>
-						<Button onClick={() => setFilter("All")}>All</Button>
+						<Button onClick={() => setFilter("All")}>Semua</Button>
 					</div>
 				</div>
 
