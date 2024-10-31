@@ -2,13 +2,15 @@ import React, { useContext, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import MyAlert from "./MyAlert";
 
-function LoginForm() {
+const LoginForm = () => {
 	const { login } = useContext(AuthContext);
 	const navigate = useNavigate();
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [errors, setErrors] = useState({ username: "", password: "" });
+	const [alert, setAlert] = useState({ variant: "", text: "" });
 
 	const validateForm = () => {
 		let valid = true;
@@ -38,21 +40,26 @@ function LoginForm() {
 		e.preventDefault();
 		if (validateForm()) {
 			try {
-				console.log({ username: username, password: password });
-				let response = await axios.post("http://localhost:8081/auth/login", {
+				let response = await axios.post("http://192.168.20.199:8081/auth/login", {
 					username: username,
 					password: password,
 				});
 				let data = response.data;
-				console.log(data);
 				if (data.status_code === 200) {
 					login(data.data.token);
+					setAlert({ variant: "success", text: "Berhasil login!" });
+					setTimeout(function() {
+					    
 					navigate("/dashboard");
+					}, 2000);
 				} else {
-					alert(data.message);
+					setAlert({ variant: "danger", text: data.message });
 				}
 			} catch (e) {
-			    alert(e)
+				setAlert({
+					variant: "danger",
+					text: "Login gagal. Periksa koneksi atau coba lagi.",
+				});
 			}
 		}
 	};
@@ -65,6 +72,7 @@ function LoginForm() {
 				className="card p-4 shadow-sm"
 				style={{ width: "100%", maxWidth: "430px", minHeight: "500px" }}>
 				<h1 className="text-left mb-5 mt-4 fs-1">Login</h1>
+				{alert.text && <MyAlert variant={alert.variant} text={alert.text} />}
 				<form onSubmit={handleSubmit}>
 					<div className="form-group mb-4 input-group-lg">
 						<label className="fs-5" htmlFor="username">
@@ -109,13 +117,13 @@ function LoginForm() {
 						)}
 					</div>
 					<button type="submit" className="btn btn-success btn-block btn-lg w-100">
-						Login
+						login
 					</button>
 				</form>
 				<p className="text-center mt-4">Tidak memiliki akun? Minta ke admin</p>
 			</div>
 		</div>
 	);
-}
+};
 
 export default LoginForm;
