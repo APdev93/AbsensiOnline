@@ -9,12 +9,11 @@ const api = require("./routes/api");
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(
-	cors({
-		origin: "http://192.168.20.199:3000",
+let allow = {
+    origin: "http://192.168.20.199:3000",
 		methods: ["GET","POST"],
-	}),
-);
+}
+app.use(cors());
 
 app.use("/auth", auth);
 app.use("/api", api);

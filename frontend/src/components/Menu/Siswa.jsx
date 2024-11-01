@@ -17,7 +17,7 @@ const Siswa = () => {
 	const fetchStudents = async () => {
 		try {
 			const token = sessionStorage.getItem("token");
-			const response = await axios.get("http://192.168.20.199:8081/api/siswa", {
+			const response = await axios.get("http://localhost:8081/api/siswa", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 			setStudents(response.data.data);
@@ -85,7 +85,6 @@ const Siswa = () => {
 					students={filteredStudents}
 					onDetailClick={handleDetailClick}
 					onDeleteClick={handleDeleteSiswa}
-					
 				/>
 			</div>
 

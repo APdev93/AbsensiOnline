@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import MyAlert from "./MyAlert";
+import Loader from "./Loader";
 
 const LoginForm = () => {
 	const { login } = useContext(AuthContext);
@@ -11,6 +12,7 @@ const LoginForm = () => {
 	const [password, setPassword] = useState("");
 	const [errors, setErrors] = useState({ username: "", password: "" });
 	const [alert, setAlert] = useState({ variant: "", text: "" });
+	const [isLoading, setIsLoading] = useState(false);
 
 	const validateForm = () => {
 		let valid = true;
@@ -38,24 +40,27 @@ const LoginForm = () => {
 
 	const handleSubmit = async e => {
 		e.preventDefault();
+		setIsLoading(true);
 		if (validateForm()) {
 			try {
-				let response = await axios.post("http://192.168.20.199:8081/auth/login", {
+				let response = await axios.post("http://localhost:8081/auth/login", {
 					username: username,
 					password: password,
 				});
 				let data = response.data;
 				if (data.status_code === 200) {
 					login(data.data.token);
+					setIsLoading(false);
 					setAlert({ variant: "success", text: "Berhasil login!" });
-					setTimeout(function() {
-					    
-					navigate("/dashboard");
+					setTimeout(function () {
+						navigate("/dashboard");
 					}, 2000);
 				} else {
+				    setIsLoading(false)
 					setAlert({ variant: "danger", text: data.message });
 				}
 			} catch (e) {
+				    setIsLoading(false)
 				setAlert({
 					variant: "danger",
 					text: "Login gagal. Periksa koneksi atau coba lagi.",
@@ -73,6 +78,7 @@ const LoginForm = () => {
 				style={{ width: "100%", maxWidth: "430px", minHeight: "500px" }}>
 				<h1 className="text-left mb-5 mt-4 fs-1">Login</h1>
 				{alert.text && <MyAlert variant={alert.variant} text={alert.text} />}
+				{isLoading && <Loader />}
 				<form onSubmit={handleSubmit}>
 					<div className="form-group mb-4 input-group-lg">
 						<label className="fs-5" htmlFor="username">
